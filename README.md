@@ -1,9 +1,9 @@
 # Review Ratings Prediction
 
 ## Task
-In this project we will observe the power of BERT. The task is to create an NLP model 
-that would be able to predict rating score (`stars`) users assign to restaurants based 
-on their comments.
+In this project we will observe the power of Transformer-based models. 
+The task is to create an NLP model that would be able to predict rating
+score (`stars`) users assign to restaurants based on their comments.
 
 ## Data
 We'll use YELP reviews for this task. Original Yelp Open Dataset is available 

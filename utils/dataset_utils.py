@@ -11,9 +11,13 @@ def fetch_per_category(n, path=os.path.join('data', 'yelp_academic_dataset_revie
     Fetch the first N reviews per star rating from the YELP reviews dataset.
     The resulting set will consist of 5*N records.
 
-    :param n: number per star rating of records to fetch.
-    :param path: path to the source YELP reviews .json.zip archive.
-    :return: list of YELP review objects.
+    :param n: int
+        Number per star rating of records to fetch.
+    :param path: string, optional (default='data/yelp_academic_dataset_review.json.zip')
+        Path to the source YELP reviews .json.zip archive.
+
+    :return: list
+        List of YELP review objects.
     """
 
     subsample = []
@@ -47,8 +51,10 @@ def save_subsample(dataset, path=os.path.join('data', 'yelp_reviews.json.gz')):
     """
     Save YELP data subsample into a compressed JSON.
 
-    :param dataset: list of YELP review objects.
-    :param path: path to save the subsample to.
+    :param dataset: list
+        List of YELP review objects.
+    :param path: string, optional (default='data/yelp_reviews.json.gz')
+        Path to save the subsample to.
     """
 
     df = pd.DataFrame(dataset)
