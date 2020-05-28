@@ -22,7 +22,7 @@ the model usage.
 * `utils` - helpers and supplementary methods, such as first N records extraction from 
 the original dataset.
 * `main.py` - default root of the project, not used at the moment.
-* `README.py` - the doc you're reading :)
+* `README.md` - the doc you're reading :)
 * `requirements.txt` - project dependencies.
 
 ## Model
