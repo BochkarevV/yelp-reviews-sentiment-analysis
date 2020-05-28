@@ -20,7 +20,7 @@ def load_and_split_dataset(path=os.path.join(*PATH_DATA), train_ratio=0.6, rando
     :param random_state: int, optional (default=0)
         Seed used by the random number generator.
 
-    :return: A tuple of three tuples containing pairs of
+    :return: Tuple of three tuples containing pairs of
              predictive and target variables.
 
     Example
