@@ -51,3 +51,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# macOS
+.DS_Store
+
+# Jupyter notebooks checkpoints
+*/.ipynb_checkpoints

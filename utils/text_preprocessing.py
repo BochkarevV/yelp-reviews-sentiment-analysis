@@ -1,6 +1,8 @@
 import warnings
+
 import torch
 from transformers import BertTokenizer
+
 from keras_preprocessing.sequence import pad_sequences
 
 
@@ -8,7 +10,7 @@ class TextPreprocessor:
 
     def __init__(self,
                  tokenizer=BertTokenizer,
-                 vocab_file='bert-large-cased',
+                 vocab_file='bert-base-cased',
                  do_lower_case=False,
                  add_special_tokens=True,
                  truncating='post',
@@ -18,7 +20,7 @@ class TextPreprocessor:
 
         :param tokenizer: PreTrainedTokenizer, optional (default=BertTokenizer)
             Tokenizer as defined in transformers library.
-        :param vocab_file: string, optional (default='bert-large-cased')
+        :param vocab_file: string, optional (default='bert-base-cased')
             Pre-defined vocabulary file to be used by the tokenizer.
             Depends on the model used. A list can be obtained here ('Shortcut name' column):
             https://huggingface.co/transformers/pretrained_models.html
@@ -103,8 +105,12 @@ class TextPreprocessor:
 
         id_sequences = []
 
+        # Tokenize and get token ids
+        # Set max_length of the sequence to the maximum a model can handle.
         for txt in texts:
-            encoded = self.tokenizer.encode(text=txt, add_special_tokens=self._add_special_tokens)
+            encoded = self.tokenizer.encode(text=txt,
+                                            add_special_tokens=self._add_special_tokens,
+                                            max_length=self.tokenizer.model_max_length)
             id_sequences.append(encoded)
 
         return id_sequences
