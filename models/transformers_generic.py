@@ -243,32 +243,6 @@ class TransformersGeneric:
 
         return logits
 
-        # Old code below, inconsistent predictions. Remove afterwards.
-
-        # y_pred = []
-        # for batch in data_loader:
-        #
-        #     # Unpack the batch and tensors to device
-        #     seq, attention_masks, _ = map(lambda x: x.to(self.device), batch)
-        #
-        #     # Do not compute gradients during validation
-        #     with torch.no_grad():
-        #         outputs = self.model(seq, attention_mask=attention_masks)
-        #
-        #     # Get the logits
-        #     logits = outputs[0]
-        #
-        #     # Move logits to CPU
-        #     logits = logits.detach().cpu()
-        #
-        #     # Find the index with the largest value for prediction.
-        #     batch_pred = logits.argmax(dim=1)
-        #
-        #     # Store predictions in an array
-        #     y_pred += list(map(lambda x: x.item(), batch_pred))
-        #
-        # return y_pred
-
     def evaluate(self, data_loader, **metrics):
         """
         Evaluate the model.

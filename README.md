@@ -1,7 +1,7 @@
 # YELP Reviews Sentiment Analysis
 
 ## Task
-In this project, we learn and compare several Transformers-based models. 
+In this project, we train and compare several Transformers-based models. 
 The task we are solving is known as sentiment analysis. In a nutshell, 
 the models learn to classify free text reviews as positive and negative ones.
 
@@ -34,6 +34,70 @@ and text preprocessing for subsequent transformers models training.
 * `.gitignore` - lists files and folders ignored by git.
 * `main.py` - default root of the project, not used at the moment.
 * `README.md` - the doc you're reading :)
-* `requirements.txt` - project dependencies. Run `pip install -r requirements.txt`
+* `requirements.txt` - project dependencies. Execute `pip install -r requirements.txt` 
+in console to install additional packages needed to run the project. 
 
-## Model
+## Data Preprocessing and Preparation for Training
+Transformer-based models expect fixed-length sequences of token IDs as inputs. Thus, 
+the first step is to transform the textual data into sequences of tokens IDs.
+
+`TextPreprocessor` specifies a text preprocessing and transformation routine as a 
+single class. When instantiating the class, one should consider which `transformers`
+model would be used. The reason for this is that two principal parameters (`tokenizer`
+and `vocab_file`) of the `TextPreprocessor` class have to be consistent with the chosen
+model. 
+
+`tokenizer` - must be an object of `PreTrainedTokenizer`. However, if the parameter
+value is not provided, `BertTokenizer` is used by default.
+
+`vocab_file` - is the vocabulary used by the tokenizer and must be a string. Refer to
+[HuggingFace's documentation](https://huggingface.co/transformers/pretrained_models.html)
+for a full list of vocabularies (Shortcut name column) and associated model architectures. 
+If none is provided, `'bert-base-cased'` is used by default. 
+
+The main working part of the `TextPreprocessor` class is the `preprocess` method. It can take 
+the following two parameters:
+
+`texts` - a list of strings to be processed and transformed.
+`fit` - boolean, tells whether to find the max length of the sequences for padding/truncation. It 
+should normally be `True` only when feeding a training corpus.
+
+The method sequentially performs the following preprocessing steps:
+1. Tokenization using the `PreTrainedTokenizer` instance provided. The tokenizer internally 
+performs four actions:
+    1. Tokenizes the input strings.
+    2. Prepends [CLS] token.
+    3. Appends [SEP] token.
+    4. Maps tokens to their IDs.
+2. Padding or truncating the sequences of token IDs to the same length.
+3. Attention masks generation. `1`s denote tokens extracted from the text and `0` specify 
+padding tokens.
+4. Conversion of input matrices with token IDs and attention masks to PyTorch tensors. 
+
+Usage example:
+```python
+train_texts = ['One morning, when Gregor Samsa woke from troubled dreams, he',
+               'found himself transformed in his bed into a horrible vermin. He',
+               'lay on his armour-like back, and if he lifted his head a little',
+               'he could see his brown belly, slightly domed and divided by',
+               'arches into stiff sections.']
+test_texts = ['The bedding was hardly able to cover',
+              'it and seemed ready to slide off any moment. His many legs,',
+              'pitifully thin compared with the size of the rest of him, waved',
+              'about helplessly as he looked.']
+
+from utils.text_preprocessing import TextPreprocessor
+prep = TextPreprocessor()
+prep.preprocess(train_texts, fit=True)
+prep.preprocess(test_texts)
+```
+
+## Models
+We make use of HuggingFace's `transformers` library (PyTorch implementation), which 
+provides general-purpose architectures for NLP tasks with a constantly growing number
+of pre-trained models.
+
+The central point of the project is `TransformersGeneric` class. This class plays the role of
+an abstraction and encapsulates models definition, training and evaluation. The 
+main purpose of this class is to hide the complexity, associated with the training process, 
+and provide only a high-level API for classification. Thus  
