@@ -14,8 +14,8 @@ unavailable hardware, we extract 25,000 records per star rating (125,000
 reviews in total) and split them into training, validation and test sets 
 for development and final model evaluation. This is still too much for 
 ordinary CPUs to process in a reasonable time. Fortunately, Google Colab
-with various up to 16GB GPUs comes in handy here and allows to train the
-models in an acceptable time. 
+offers performant (up to 16GB GPU RAM) GPUs which is sufficient for 
+training the models in an acceptable timeframe.
 
 Basic exploratory data analysis of the subsample is available in 
 `notebooks/yelp_eda.ipynb`. 
@@ -70,7 +70,7 @@ performs four actions:
     3. Appends [SEP] token.
     4. Maps tokens to their IDs.
 2. Padding or truncating the sequences of token IDs to the same length.
-3. Attention masks generation. `1`s denote tokens extracted from the text and `0` specify 
+3. Attention masks generation. `1` denotes tokens extracted from the text and `0` specifies 
 padding tokens.
 4. Conversion of input matrices with token IDs and attention masks to PyTorch tensors. 
 
@@ -88,8 +88,8 @@ test_texts = ['The bedding was hardly able to cover',
 
 from utils.text_preprocessing import TextPreprocessor
 prep = TextPreprocessor()
-prep.preprocess(train_texts, fit=True)
-prep.preprocess(test_texts)
+train_seqs, train_masks = prep.preprocess(train_texts, fit=True)
+test_seqs, test_masks = prep.preprocess(test_texts)
 ```
 
 ## Models
@@ -100,4 +100,42 @@ of pre-trained models.
 The central point of the project is `TransformersGeneric` class. This class plays the role of
 an abstraction and encapsulates models definition, training and evaluation. The 
 main purpose of this class is to hide the complexity, associated with the training process, 
-and provide only a high-level API for classification. Thus  
+and provide only a high-level API for classification. 
+
+The constructor of the class can take a few parameters, however, the first three are the crucial ones:
+
+`num_classes` - number of classes, 2 in this example.
+`transformers_model` - instance of `PreTrainedModel` class. `BertForSequenceClassification` is
+used if none is provided.
+`model_name` - name of the model which pre-trained parameters will be used. Full list can be found 
+[here](https://huggingface.co/transformers/pretrained_models.html). By default, `'bert-base-cased'`
+is used if the parameter is not indicated.
+
+For an example of its usage, refer to `notebooks/yelp_reviews_sentiment_analysis.ipynb`.
+
+## Results
+We have experimented with ALBERT Base, DistilRoBERTa Base, RoBERTa Base, BERT Base Cased and DistilBERT Base 
+Cased models for comparison. The following image shows training and validation losses, as well as 
+accuracy and F1 score measured on the validation set.
+
+![Metrics](/images/loss_val_f1_acc.png)
+
+Interestingly, judging by the training and validation losses, distilled RoBERTa and BERT models learn the 
+data more closely than their non-distilled counterparts. However, this does not result in their better 
+performance on the validation set. On the other hand, both RoBERTa-based models outperform BERT and ALBERT. 
+Thus, even though the RoBERTa pretraining approach differs seemingly marginally, it still yields
+a more robust and better-performing model both in terms of validation accuracy and F1 score in these
+particular settings.
+
+To check how well the models generalize to the unseen data, we evaluate them on a hold-out test set. The 
+following image presents the final accuracy (X-axis) and F1 score (Y-axis).
+
+![Test Accuracy vs F1](/images/test_acc_f1.png)
+
+The leaders do not change here and RoBERTa-based models score better against BERT and ALBERT with regard 
+to both metrics. Compared to the validation accuracy, the testing one stays roughly the same slightly above
+0.92. At the same time, the F1 score dropped by approx. 0.03 (RoBERTa) and 0.02 (DistilRoBERTa), resulting in 
+0.896 and 0.899 correspondingly. A similar decrease in F1 is observed for the remaining three models.
+
+Interactive dashboard with these results and runs details is available on the
+[Weights & Biases project page](https://app.wandb.ai/vasily/yelp-reviews-sentiment-analysis?workspace=user-vasily).

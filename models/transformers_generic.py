@@ -22,7 +22,7 @@ class TransformersGeneric:
 
         :param num_classes: int
             Number of target classes.
-        :param transformers_model: BertPreTrainedModel, optional (default=BertForSequenceClassification)
+        :param transformers_model: PreTrainedModel, optional (default=BertForSequenceClassification)
             Pre-trained model defined in HuggingFace's transformer model.
             Currently will only work with classification models.
         :param model_name: string, optional (default='bert-base-cased')
