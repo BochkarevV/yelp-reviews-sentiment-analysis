@@ -217,7 +217,7 @@ class TransformersGeneric:
 
     def predict(self, sequences, attention_masks):
         """
-        Make predictions for data without labels.
+        Makes the prediction and returns logits.
 
         :param sequences: torch.tensor()
             Encoded input sequences from a batch.
@@ -225,7 +225,7 @@ class TransformersGeneric:
             Corresponding attention masks.
 
         :return: list
-            Predicted label ids.
+            Predicted logits.
         """
 
         # Make sure the model is in the evaluation mode.
@@ -242,6 +242,23 @@ class TransformersGeneric:
         logits = logits.detach().cpu()
 
         return logits
+
+    def predict_proba(self, sequences, attention_masks):
+        """
+        Predicts probability distribution over the classes.
+
+        :param sequences: torch.tensor()
+            Encoded input sequences from a batch.
+        :param attention_masks: torch.tensor()
+            Corresponding attention masks.
+
+        :return: torch.tensor()
+            Probability distributions in the shape of (# instances, # classes).
+        """
+
+        logits = self.predict(sequences, attention_masks)
+        softmax = torch.nn.Softmax(dim=1)
+        return softmax(logits)
 
     def evaluate(self, data_loader, **metrics):
         """
